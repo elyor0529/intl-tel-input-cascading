@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Example: Country sync</title>
+  <link rel="stylesheet" href="css/intlTelInput.min.css">
+  <style>
+    input,
+    label {
+      display: block;
+    }
+
+    input,
+    select,
+    label {
+      margin: 5px 0;
+    }
+
+    .form-item {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="result">
+    <div class="form-item">
+      <label>Phone</label>
+      <input id="phone" type="tel">
+    </div>
+    <div class="form-item">
+      <label>Country</label>
+      <select id="country"></select>
+    </div>
+  </div>
+  <script src="js/intlTelInput.min.js"></script>
+  <script>
+    var defaultCountry = "ae";
+    var countryItems = ["ae", "bh", "kw", "om", "qa", "sa"];
+    var countryData = window.intlTelInputGlobals.getCountryData().filter((item) => countryItems.find(a => a == item.iso2));
+    var phoneInput = document.querySelector("#phone");
+    var countryDropdown = document.querySelector("#country");
+    var iti = window.intlTelInput(phoneInput, {
+      initialCountry: defaultCountry,
+      separateDialCode: true,
+      onlyCountries: countryItems,
+      utilsScript: "js/utils.js"
+    });
+
+    for (var i = 0; i < countryData.length; i++) {
+      var country = countryData[i];
+      var optionNode = document.createElement("option");
+      optionNode.value = country.iso2;
+      var textNode = document.createTextNode(country.name);
+      optionNode.appendChild(textNode);
+      countryDropdown.appendChild(optionNode);
+    }
+    countryDropdown.value = defaultCountry;
+
+    phoneInput.addEventListener('countrychange', function (e) {
+      countryDropdown.value = iti.getSelectedCountryData().iso2;
+    });
+
+    countryDropdown.addEventListener('change', function (e) {
+      iti.setCountry(this.value);
+    });
+
+  </script>
+</body>
+
+</html>
